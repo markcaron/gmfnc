@@ -59,28 +59,28 @@ add_action( 'save_post', 'client_template_save_postdata' );
 
 
 // For adding a field to the Featured Image
-function add_featured_image_display_settings( $content, $post_id ) {
-    $field_id    = 'featured_image_adjust_y';
-    $field_value = esc_attr( get_post_meta( $post_id, $field_id, true ) );
-    $field_text  = esc_html__( 'Vertical placement adjustment', 'resortraces' );
-    $field_help  = esc_html__( '(e.g. +/- 50%)', 'resortraces' );
+// function add_featured_image_display_settings( $content, $post_id ) {
+//     $field_id    = 'featured_image_adjust_y';
+//     $field_value = esc_attr( get_post_meta( $post_id, $field_id, true ) );
+//     $field_text  = esc_html__( 'Vertical placement adjustment', 'gmfnc' );
+//     $field_help  = esc_html__( '(e.g. +/- 50%)', 'gmfnc' );
+//
+//     $field_label = sprintf(
+//         '<p><label for="%1$s">%3$s</label><input type="text" name="%1$s" id="%1$s" value="%2$s"><em class="summary">%4$s</em></p>',
+//         $field_id, $field_value, $field_text, $field_help
+//     );
+//
+//     return $content .= $field_label;
+// }
+// add_filter( 'admin_post_thumbnail_html', 'add_featured_image_display_settings', 10, 2 );
 
-    $field_label = sprintf(
-        '<p><label for="%1$s">%3$s</label><input type="text" name="%1$s" id="%1$s" value="%2$s"><em class="summary">%4$s</em></p>',
-        $field_id, $field_value, $field_text, $field_help
-    );
-
-    return $content .= $field_label;
-}
-add_filter( 'admin_post_thumbnail_html', 'add_featured_image_display_settings', 10, 2 );
-
-function save_featured_image_display_settings( $post_ID, $post, $update ) {
-    $field_id    = 'featured_image_adjust_y';
-    $field_value = isset( $_REQUEST[ $field_id ] ) ? $_REQUEST[ $field_id ] : '';
-
-    update_post_meta( $post_ID, $field_id, $field_value );
-}
-add_action( 'save_post', 'save_featured_image_display_settings', 10, 3 );
+// function save_featured_image_display_settings( $post_ID, $post, $update ) {
+//     $field_id    = 'featured_image_adjust_y';
+//     $field_value = isset( $_REQUEST[ $field_id ] ) ? $_REQUEST[ $field_id ] : '';
+//
+//     update_post_meta( $post_ID, $field_id, $field_value );
+// }
+// add_action( 'save_post', 'save_featured_image_display_settings', 10, 3 );
 
 
 
@@ -92,6 +92,7 @@ function client_custom_meta_sidebarbox( $post ) {
 	$meta = get_post_meta($post->ID, $metavarname, true);
 
 	$sidemenu_display = ( !empty( $meta['sidemenu_display'] ) ) ? $meta['sidemenu_display'] : '';
+	$featured_image_adjust_y = ( !empty( $meta['featured_image_adjust_y'] ) ) ? $meta['featured_image_adjust_y'] : '';
 
 	?>
 	<input type="hidden" style="display: none;" name="<?php echo $metavarname; ?>[nugget2]" value="true" />
@@ -99,6 +100,12 @@ function client_custom_meta_sidebarbox( $post ) {
   <p class="field-group">
       <input name="<?php echo $metavarname; ?>[sidemenu_display]" id="<?php echo $metavarname; ?>_sidemenu_display" type="checkbox" value="1"<?php echo ($sidemenu_display != '') ? ' checked="checked"' : ''; ?> />
       <label for="<?php echo $metavarname; ?>_sidemenu_display">Display Sidemenu</label>
+  </p>
+
+	<p class="field-group">
+      <input name="<?php echo $metavarname; ?>[featured_image_adjust_y]" id="<?php echo $metavarname; ?>_featured_image_adjust_y" type="text" value="<?php echo $featured_image_adjust_y; ?>" />
+      <label for="<?php echo $metavarname; ?>_featured_image_adjust_y">Vertical placement adjustment</label>
+			<em class="summary">(e.g. +/- 50%)</em>
   </p>
 	<?php
 }

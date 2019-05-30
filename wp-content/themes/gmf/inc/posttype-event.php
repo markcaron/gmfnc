@@ -16,7 +16,7 @@ function custom_events_post_type() {
 				'singular_name' => __( 'Event' )
 			),
 			'public' => true,
-            'exclude_from_search' => true,
+      'exclude_from_search' => false,
 			'has_archive' => true,
 			'rewrite' => array('slug' => 'events', 'with_front' => false),
 			'supports' => array('title', 'editor', 'thumbnail', 'excerpt'),
@@ -43,32 +43,52 @@ function custom_events_metabox() {
 
     $event_location = ( !empty( $meta['event_location'] ) ) ? $meta['event_location'] : '';
     $event_date = ( !empty( $meta['event_date'] ) ) ? $meta['event_date'] : '';
+		$news_event = ( !empty( $meta['news_event'] ) ) ? $meta['news_event'] : '';
     // pbug($meta);
 
     // Noncename needed to verify where the data originated
     wp_nonce_field( $typename, $typename . "-nonce" );
     ?>
-
+		<div class="row">
+				<div class="col-md-6">
+					<fieldset>
+						<legend>Event or News Type:</legend>
+						<p class="field-group checkbox-group">
+								<input name="<?php echo $typename; ?>[news_event]" id="<?php echo $typename; ?>_news_event_event" type="radio" value="event"<?php echo ($news_event === 'event') ? ' checked' : ''; ?> />
+								<label for="<?php echo $typename; ?>_news_event_event">Event</label>
+						</p>
+						<p class="field-group checkbox-group">
+								<input name="<?php echo $typename; ?>[news_event]" id="<?php echo $typename; ?>_news_event_fundraiser" type="radio" value="fundraiser"<?php echo ($news_event === 'fundraiser') ? ' checked' : ''; ?> />
+								<label for="<?php echo $typename; ?>_news_event_fundraiser">Fundraiser</label>
+						</p>
+						<p class="field-group checkbox-group">
+								<input name="<?php echo $typename; ?>[news_event]" id="<?php echo $typename; ?>_news_event_news" type="radio" value="news"<?php echo ($news_event === 'news') ? ' checked' : ''; ?> />
+								<label for="<?php echo $typename; ?>_news_event_news">News</label>
+						</p>
+					</fieldset>
+				</div>
+		</div>
     <div class="row">
-        <div class="col-md-9">
-            <p class="field-group">
-                <label for="<?php echo $typename; ?>_event_location">Resort Location:</label>
-                <input type="text" id="<?php echo $typename; ?>_event_location" name="<?php echo $typename; ?>[event_location]" value="<?php echo $event_location; ?>" class="form-control" />
-            </p>
-        </div>
-        <div class="col-md-3">
-            <p class="field-group">
-                <label for="<?php echo $typename; ?>_event_date">Event Date:</label>
-                <input type="text" id="<?php echo $typename; ?>_event_date" name="<?php echo $typename; ?>[event_date]" value="<?php echo $event_date; ?>" class="form-control" />
-                <em class="summary"><code>YYYY-MM-DD</code></em>
-            </p>
-        </div>
+      <div class="col-md-9">
+          <p class="field-group">
+              <label for="<?php echo $typename; ?>_event_location">Location:</label>
+              <input type="text" id="<?php echo $typename; ?>_event_location" name="<?php echo $typename; ?>[event_location]" value="<?php echo $event_location; ?>" class="form-control" />
+							<em class="summary">If applicable</em>
+					</p>
+      </div>
+      <div class="col-md-3">
+          <p class="field-group">
+              <label for="<?php echo $typename; ?>_event_date">Event Date:</label>
+              <input type="text" id="<?php echo $typename; ?>_event_date" name="<?php echo $typename; ?>[event_date]" value="<?php echo $event_date; ?>" class="form-control" />
+              <em class="summary"><code>YYYY-MM-DD</code></em>
+          </p>
+      </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <p class="field-group checkbox-group">
                 <input name="<?php echo $typename; ?>[event_hide]" id="<?php echo $typename; ?>_event_hide" type="checkbox" value="1"<?php echo ($event_hide != '') ? ' checked' : ''; ?> />
-                <label for="<?php echo $typename; ?>_event_hide">Hide Event</label>
+                <label for="<?php echo $typename; ?>_event_hide">Hide News/Event</label>
             </p>
         </div>
     </div>
@@ -108,4 +128,100 @@ function custom_events_save_meta($post_id, $post) {
 	// regular post meta data
 	update_post_meta($id, $typename, $meta);
 
+}
+
+function gmf_events_shortcode_hp( $atts, $content = null ) {
+	extract( shortcode_atts( array(
+		'num' => ''
+	), $atts ) );
+
+    if ( !empty($num) ):
+			$query_args = array(
+				'post_type' => 'events',
+				'posts_per_page' => $num,
+				'nopaging' => false,
+				'orderby' => 'date',
+				'order' => 'DESC'
+			);
+		else:
+			$query_args = array(
+				'post_type' => 'events',
+				'posts_per_page' => -1,
+				'nopaging' => true,
+				'orderby' => 'date',
+				'order' => 'DESC'
+			);
+		endif;
+
+    $events_query = new WP_query( $query_args );
+    $events_output = '';
+
+    if ( $events_query->have_posts() ):
+
+    	$events =  $events_query->posts;
+
+			$events_output .= '<div class="hp-events">';
+
+    	foreach( $events as $event ):
+
+				$typename = 'events';
+		    $meta = get_post_meta($event->ID, $typename, true);
+
+				// Is News or Event?
+				$news_event = ( !empty( $meta['news_event'] ) ) ? $meta['news_event'] : '';
+				$news_event_html = ($news_event !== '') ? '<strong class="type type-' . $news_event . '">' . ucfirst($news_event) . '</strong>' : '';
+
+				// Location
+				$event_location = ( !empty( $meta['event_location'] ) ) ? $meta['event_location'] : '';
+
+				// Date
+				$event_date_string = ( !empty( $meta['event_date'] ) ) ? $meta['event_date'] : '';
+				$event_date = new DateTime($event_date_string);
+				$event_date_formatted = $event_date->format('F d, Y');
+
+				// For comparing event date/time to NOW
+				$today = strtotime('now');
+				$event_compare = strtotime($event_date_string);
+
+				$show_event = false;
+
+				if ($news_event === 'event' || $news_event === 'fundraiser'):
+					$event_date_html = ($event_date !== '') ? '<em class="date"><span>On </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
+					$show_event = ($event_compare >= $today);
+				else:
+					$event_date_html = ($event_date !== '') ? '<em class="date"><span>Posted on </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
+					$show_event = ($event_compare >= $today);
+				endif;
+
+				// If date/time hasn't passed.
+				if ($show_event === true):
+					// Build Output
+					$events_output .= '<article class="hp-event"><header class="entry-header">';
+					$events_output .= '<h3 class="entry-title"><a href="' . esc_url( get_permalink($event->ID) ) . '" rel="bookmark">' . esc_html( get_the_title($event->ID) ) . '</a></h3>';
+		    	$events_output .= '<div class="entry-meta">';
+					$events_output .= ($news_event_html != '') ? $news_event_html . ' ' : $news_event_html;
+					$events_output .= $event_date_html;
+					$events_output .= '</div></header><div class="entry-content">';
+					$events_output .= esc_html( get_the_excerpt($event->ID) );
+					$events_output .= '</div></article>';
+
+				endif;
+
+    	endforeach;
+
+			$events_output .= '</div>';
+			
+    else:
+    	$events_output = '<div class="alert">Sorry, there are no events.</div>';
+    endif;
+
+	return $events_output;
+}
+
+add_action('init', 'gmf_events_register_shortcodes', 100);
+function gmf_events_register_shortcodes() {
+
+	add_shortcode( 'events_hp', 'gmf_events_shortcode_hp' ); // adds instructors shortcode
+
+	do_action('gmf_events_register_shortcodes');
 }

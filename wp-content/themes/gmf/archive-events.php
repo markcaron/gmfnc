@@ -15,22 +15,16 @@ $eventsPhoto = wp_get_attachment_image(91, 'full');
 
 	<?php if ($eventsPhoto): ?>
 	<div class="hero">
-		<div class="hero-bg" style="transform: translateY(-40%);"><?php echo $eventsPhoto; ?></div>
-		<div class="header" aria-hidden="true"><h1>Events</h1></div>
+		<div class="header"><h1>News &amp; Events</h1></div>
+		<div class="hero-bg" style="transform: translateY(-50%);"><?php echo $eventsPhoto; ?></div>
 	</div>
 	<?php endif; ?>
 
 	<div id="primary" class="content-area">
-		<main id="main" class="site-main">
+		<div id="site-main" class="site-main">
 
 		<?php if ( have_posts() ) : ?>
 
-			<header class="page-header">
-				<?php
-				the_archive_title( '<h1 class="page-title">', '</h1>' );
-				the_archive_description( '<div class="archive-description">', '</div>' );
-				?>
-			</header><!-- .page-header -->
 
 			<?php
 			/* Start the Loop */
@@ -55,7 +49,7 @@ $eventsPhoto = wp_get_attachment_image(91, 'full');
 		endif;
 		?>
 
-		</main><!-- #main -->
+		</div><!-- #site-main -->
 	</div><!-- #primary -->
 
 <?php

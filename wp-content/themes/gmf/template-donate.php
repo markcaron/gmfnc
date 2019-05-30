@@ -23,6 +23,7 @@ while ( have_posts() ) :
 	$donate_content = ( !empty( $meta['donate_content'] ) ) ? $meta['donate_content'] : '';
 	$donate_button = ( !empty( $meta['donate_button_link'] ) && !empty( $meta['donate_button_text'] ) ) ? '<a class="cta" href="' . $meta['donate_button_link'] . '">' . $meta['donate_button_text'] . '</a>' : '';
 
+	$heroPhotoAdjustHTML = ( !empty( $meta['featured_image_adjust_y'] ) ) ? ' style="transform: translateY(' . $meta['featured_image_adjust_y'] . ');"' : '';
 
 ?>
 
@@ -31,15 +32,15 @@ while ( have_posts() ) :
 	<?php
 	$heroPhoto = get_the_post_thumbnail($post->ID, 'full');
 	?>
-	<div class="hero-bg"<?php echo $heroPhotoAdjustHTML; ?>><?php echo $heroPhoto; ?></div>
 	<div class="header" aria-hidden="true">
 		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
 	</div>
+	<div class="hero-bg"<?php echo $heroPhotoAdjustHTML; ?>><?php echo $heroPhoto; ?></div>
 </div>
 <?php endif; ?>
 
 	<div id="primary" class="content-area">
-		<main id="main" class="site-main">
+		<div id="site-main" class="site-main">
 			<section class="main-content">
 			<?
 				get_template_part( 'template-parts/content', 'page' );
@@ -50,7 +51,7 @@ while ( have_posts() ) :
 				<?php echo apply_filters('the_content', $donate_content); ?>
 				<?php //echo $donate_button; ?>
 			</section>
-		</main><!-- #main -->
+		</div><!-- #site-main -->
 	</div><!-- #primary -->
 
 <?php

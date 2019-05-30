@@ -31,7 +31,7 @@ $heroPhoto_url = get_the_post_thumbnail_url($boardpage->ID,'full');
 	<?php endif; ?>
 
 	<div id="primary" class="content-area">
-		<main id="main" class="site-main">
+		<div id="site-main" class="site-main">
 
 		<?php
 		while ( have_posts() ) :
@@ -48,7 +48,7 @@ $heroPhoto_url = get_the_post_thumbnail_url($boardpage->ID,'full');
 		endwhile; // End of the loop.
 		?>
 
-		</main><!-- #main -->
+		</div><!-- #site-main -->
 	</div><!-- #primary -->
 
 <?php

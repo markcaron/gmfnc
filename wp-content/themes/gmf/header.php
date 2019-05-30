@@ -47,22 +47,26 @@
 		</div>
 
 		<nav id="site-navigation" class="main-navigation" role="navigation">
-			<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php esc_html_e( 'Main Menu', 'gmf' ); ?></button>
-			<?php
-			wp_nav_menu( array(
-				'theme_location' => 'menu-1',
-				'menu_id'        => 'primary-menu',
-			) );
-			?>
+			<h2 id="site-nav-heading" class="screen-reader-text">Site navigation</h2>
+			<div class="primary-menu-wrap">
+				<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php esc_html_e( 'Main Menu', 'gmf' ); ?></button>
+				<?php
+				wp_nav_menu( array(
+					'theme_location' => 'menu-1',
+					'menu_id'        => 'primary-menu',
+					'items_wrap'      => '<ul id="%1$s" class="%2$s" aria-owns="menu-item-35" aria-labelledby="site-nav-heading">%3$s</ul>',
+				) );
+				?>
+			</div>
+			<div class="secondary-menu-wrap">
+				<?php
+				wp_nav_menu( array(
+					'theme_location' => 'menu-2',
+					'menu_id'        => 'secondary-menu',
+				) );
+				?>
+			</div>
 		</nav><!-- #site-navigation -->
-		<nav class="secondary-navigation" role="navigation">
-			<?php
-			wp_nav_menu( array(
-				'theme_location' => 'menu-2',
-				'menu_id'        => 'secondary-menu',
-			) );
-			?>
-		</nav>
 	</header><!-- #masthead -->
 
-	<div id="content" class="site-content" role="main">
+	<main id="content" class="site-content">

@@ -19,6 +19,8 @@ while ( have_posts() ) :
 	$metavarname = CLIENT_SLUG . '_custom_meta';
 	$meta = get_post_meta($post->ID, $metavarname, true);
 
+	$heroPhotoAdjustHTML = ( !empty( $meta['featured_image_adjust_y'] ) ) ? ' style="transform: translateY(' . $meta['featured_image_adjust_y'] . ');"' : '';
+
 ?>
 
 	<?php if ($heroPhoto_url): ?>
@@ -26,18 +28,18 @@ while ( have_posts() ) :
 		<?php
 		$heroPhoto = get_the_post_thumbnail($post->ID, 'full');
 		?>
-		<div class="hero-bg"<?php echo $heroPhotoAdjustHTML; ?>><?php echo $heroPhoto; ?></div>
 		<div class="header" aria-hidden="true">
-			<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
+			<?php the_title( '<h1 class="entry-title" id="board-members">', '</h1>' ); ?>
 		</div>
+		<div class="hero-bg"<?php echo $heroPhotoAdjustHTML; ?>><?php echo $heroPhoto; ?></div>
 	</div>
 	<?php endif; ?>
 
 	<div id="primary" class="content-area">
-		<main id="main" class="site-main">
+		<div id="site-main" class="site-main">
 
 		<?php
-			get_template_part( 'template-parts/content', 'page' );
+			// get_template_part( 'template-parts/content', 'page' );
 
 
 
@@ -53,7 +55,7 @@ while ( have_posts() ) :
 
 			if ($bios):
 			?>
-			<ul class="board-members">
+			<ul class="board-members" aria-labelledby="board-members">
 			<?php
 				foreach( $bios as $key => $bio ):
 
@@ -96,7 +98,7 @@ while ( have_posts() ) :
 		<?php
 			endif;
 		?>
-		</main><!-- #main -->
+		</div><!-- #site-main -->
 	</div><!-- #primary -->
 
 	<?php

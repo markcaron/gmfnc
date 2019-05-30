@@ -61,7 +61,7 @@ function custom_event_settings() {
 								                  $textareaID = $P . '_contact_content';
 								                  $settings = array(
 								                    'textarea_name' => $P . '[contact_content]',
-								                    'editor_class' => 'resort-content'
+								                    'editor_class' => 'gmfnc-content'
 								                  );
 
 								                  wp_editor( $contact_content, $textareaID, $settings );

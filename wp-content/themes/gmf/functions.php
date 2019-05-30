@@ -118,10 +118,10 @@ function gmf_widgets_init() {
 	register_sidebar( array(
 		'name'          => esc_html__( 'Pages Sidebar', 'gmf' ),
 		'id'            => 'sidebar-pages',
-		'description'   => esc_html__( 'Add widgets here.', 'gmf' ),
+		'description'   => esc_html__( 'Add sub nav here only.', 'gmf' ),
 		'before_widget' => '<section id="%1$s" class="widget %2$s">',
 		'after_widget'  => '</section>',
-		'before_title'  => '<h2 class="widget-title">',
+		'before_title'  => '<h2 id="subnav-title" class="widget-title">',
 		'after_title'   => '</h2>',
 	) );
 }
@@ -213,8 +213,6 @@ function meta_image_enqueue() {
     // $current_screen = get_current_screen();
 
 		if ( is_admin() ) {
-    // pbug($current_screen);
-    // if( $typenow == 'post' || $current_screen->base == 'toplevel_page_custom-settings' || $typenow = 'page' || $typenow == 'events' ) {
       wp_enqueue_media();
 
       // Registers and enqueues the required javascript.
@@ -226,13 +224,89 @@ function meta_image_enqueue() {
           )
       );
       wp_enqueue_script( 'meta-image' );
-    // } // End if
 
 	    // Admin only styles
-			// wp_enqueue_style( 'resortraces-admin-bootstrap', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', false, null );
 	    wp_enqueue_style( 'gmf-admin-style', '/' . THEME_PATH . '/admin.css', false, null );
 
 		} // End if
 
 } // End example_image_enqueue()
 add_action( 'admin_enqueue_scripts', 'meta_image_enqueue' );
+
+
+
+// Accessible Nav Menu widget class
+class Accessible_Nav_Menu_Widget extends WP_Widget {
+
+  function Accessible_Nav_Menu_Widget() {
+      $widget_ops = array( 'description' => __('Add an accessible menu to your sidebar.') );
+      parent::__construct( 'nav_menu', __('Accessible Nav Menu'), $widget_ops );
+  }
+
+  function widget($args, $instance) {
+      // Get menu
+      $nav_menu = ! empty( $instance['nav_menu'] ) ? wp_get_nav_menu_object( $instance['nav_menu'] ) : false;
+
+      if ( !$nav_menu )
+          return;
+
+      /** This filter is documented in wp-includes/default-widgets.php */
+      $instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
+
+      echo $args['before_widget'];
+
+      if ( !empty($instance['title']) )
+          echo $args['before_title'] . $instance['title'] . $args['after_title'];
+
+      wp_nav_menu( array(
+				'fallback_cb' => '',
+				'menu' => $nav_menu,
+				'container_class' => 'a11y-menu-wrapper',
+				'menu_class' => 'a11y-menu',
+				'items_wrap' => '<ul id="%1$s" class="%2$s" aria-labelledby="subnav-title">%3$s</ul>',
+			) );
+
+      echo $args['after_widget'];
+  }
+
+  function update( $new_instance, $old_instance ) {
+      $instance['title'] = strip_tags( stripslashes($new_instance['title']) );
+      $instance['nav_menu'] = (int) $new_instance['nav_menu'];
+      return $instance;
+  }
+
+  function form( $instance ) {
+      $title = isset( $instance['title'] ) ? $instance['title'] : '';
+      $nav_menu = isset( $instance['nav_menu'] ) ? $instance['nav_menu'] : '';
+
+      // Get menus
+      $menus = wp_get_nav_menus( array( 'orderby' => 'name' ) );
+
+      // If no menus exists, direct the user to go and create some.
+      if ( !$menus ) {
+          echo '<p>'. sprintf( __('No menus have been created yet. <a href="%s">Create some</a>.'), admin_url('nav-menus.php') ) .'</p>';
+          return;
+      }
+      ?>
+      <p>
+          <label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:') ?></label>
+          <input type="text" class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $title; ?>" />
+      </p>
+      <p>
+          <label for="<?php echo $this->get_field_id('nav_menu'); ?>"><?php _e('Select Menu:'); ?></label>
+          <select id="<?php echo $this->get_field_id('nav_menu'); ?>" name="<?php echo $this->get_field_name('nav_menu'); ?>">
+              <option value="0"><?php _e( '&mdash; Select &mdash;' ) ?></option>
+      <?php
+          foreach ( $menus as $menu ) {
+              echo '<option value="' . $menu->term_id . '"'
+                  . selected( $nav_menu, $menu->term_id, false )
+                  . '>'. esc_html( $menu->name ) . '</option>';
+          }
+      ?>
+          </select>
+      </p>
+      <?php
+  }
+}
+
+add_action('widgets_init', create_function('', 'return register_widget("Accessible_Nav_Menu_Widget");'));

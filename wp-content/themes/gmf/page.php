@@ -26,6 +26,8 @@ while ( have_posts() ) :
 	$metavarname = CLIENT_SLUG . '_custom_meta';
 	$meta = get_post_meta($post->ID, $metavarname, true);
 
+	$heroPhotoAdjustHTML = ( !empty( $meta['featured_image_adjust_y'] ) ) ? ' style="transform: translateY(' . $meta['featured_image_adjust_y'] . ');"' : '';
+
 ?>
 
 	<?php if ($heroPhoto_url): ?>
@@ -33,15 +35,15 @@ while ( have_posts() ) :
 		<?php
 		$heroPhoto = get_the_post_thumbnail($post->ID, 'full');
 		?>
-		<div class="hero-bg"<?php echo $heroPhotoAdjustHTML; ?>><?php echo $heroPhoto; ?></div>
 		<div class="header" aria-hidden="true">
 			<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
 		</div>
+		<div class="hero-bg"<?php echo $heroPhotoAdjustHTML; ?>><?php echo $heroPhoto; ?></div>
 	</div>
 	<?php endif; ?>
 
 	<div id="primary" class="content-area">
-		<main id="main" class="site-main">
+		<div id="site-main" class="site-main">
 
 		<?php
 		// while ( have_posts() ) :
@@ -57,7 +59,7 @@ while ( have_posts() ) :
 		// endwhile; // End of the loop.
 		?>
 
-		</main><!-- #main -->
+		</div><!-- #site-main -->
 	</div><!-- #primary -->
 
 	<?php

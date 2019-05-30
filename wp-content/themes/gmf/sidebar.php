@@ -24,7 +24,7 @@ if ( ! is_active_sidebar( 'sidebar-1' ) ) {
 			dynamic_sidebar('sidebar-pages');
 		} elseif ( is_singular('bios') ) {
 			dynamic_sidebar('sidebar-pages');
-		} elseif ( !is_page() ) {
+		} elseif ( !is_page() && !is_search() ) {
 			dynamic_sidebar( 'sidebar-1' );
 		}
 	?>
