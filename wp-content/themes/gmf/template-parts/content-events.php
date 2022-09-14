@@ -43,13 +43,31 @@
 
 			// Date
 			$event_date_string = ( !empty( $meta['event_date'] ) ) ? $meta['event_date'] : '';
-			$event_date = new DateTime($event_date_string);
-			$event_date_formatted = $event_date->format('F d, Y');
+
+			$isTBD = strpos($event_date_string, 'TBD');
+			$isNA = strpos($event_date_string, 'N/A');
+
+			if ( $isTBD !== false ) {
+				$event_date_formatted = $event_date_string;
+			} elseif ( $isNA !== false ) {
+				$event_date_formatted = '';
+			} else {
+				$event_date = new DateTime($event_date_string);
+				$event_date_formatted = $event_date->format('F d, Y');
+			}
 
 			if ($news_event === 'event' || $news_event === 'fundraiser'):
-				$event_date_html = ($event_date !== '') ? '<em class="date"><span>On </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
+				if ( $isTBD !== false || $isNA !== false ) {
+					$event_date_html = '<em class="date">' . $event_date_formatted . '</em>';
+				} else {
+					$event_date_html = ($event_date !== '') ? '<em class="date"><span>On </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
+				}
 			else:
-				$event_date_html = ($event_date !== '') ? '<em class="date"><span>Posted on </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
+				if ( $isTBD !== false || $isNA !== false ) {
+					$event_date_html = '<em class="date">' . $event_date_formatted . '</em>';
+				} else {
+					$event_date_html = ($event_date !== '') ? '<em class="date"><span>Posted on </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
+				}
 			endif;
 
 

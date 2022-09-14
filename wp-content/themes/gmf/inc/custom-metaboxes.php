@@ -25,11 +25,19 @@ function client_template_add_meta_box() {
 	}
 
 	if ( $template_file == 'template-donate.php' ) {
-		add_meta_box(CLIENT_SLUG . '_donate_meta', 'How to Donate Content', 'client_custom_meta_donate', 'page', 'normal', 'high');
+		add_meta_box(CLIENT_SLUG . '_donate_meta', 'Donate Band 1', 'client_custom_meta_donate', 'page', 'normal', 'high');
+		add_meta_box(CLIENT_SLUG . '_donate_meta2', 'Donate Band 2', 'client_custom_meta_donate2', 'page', 'normal', 'high');
+		add_meta_box(CLIENT_SLUG . '_donate_meta3', 'Donate Band 3', 'client_custom_meta_donate3', 'page', 'normal', 'high');
+		add_meta_box(CLIENT_SLUG . '_donate_meta4', 'Donate Band 4', 'client_custom_meta_donate4', 'page', 'normal', 'high');
+		add_meta_box(CLIENT_SLUG . '_donate_meta5', 'Donate Band 5', 'client_custom_meta_donate5', 'page', 'normal', 'high');
 	}
 
 	if ( $template_file == 'template-2col.php' ) {
-		add_meta_box(CLIENT_SLUG . '_donate_meta', '2nd Column Content', 'client_custom_meta_2col', 'page', 'normal', 'high');
+		add_meta_box(CLIENT_SLUG . '_2col_meta', '2nd Column Content', 'client_custom_meta_2col', 'page', 'normal', 'high');
+	}
+
+	if ( $template_file == 'template-bands.php' ) {
+		add_meta_box(CLIENT_SLUG . '_bands_meta', 'Band Content', 'client_custom_meta_bands', 'page', 'normal', 'high');
 	}
 
 	if ( $typenow == 'page' ) {

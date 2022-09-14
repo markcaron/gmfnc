@@ -81,6 +81,7 @@ function custom_events_metabox() {
               <label for="<?php echo $typename; ?>_event_date">Event Date:</label>
               <input type="text" id="<?php echo $typename; ?>_event_date" name="<?php echo $typename; ?>[event_date]" value="<?php echo $event_date; ?>" class="form-control" />
               <em class="summary"><code>YYYY-MM-DD</code></em>
+							<em class="summary">For News or Fundraisers with no date enter <code>N/A</code> for it to show up on the home page</em>
           </p>
       </div>
     </div>
@@ -176,8 +177,19 @@ function gmf_events_shortcode_hp( $atts, $content = null ) {
 
 				// Date
 				$event_date_string = ( !empty( $meta['event_date'] ) ) ? $meta['event_date'] : '';
-				$event_date = new DateTime($event_date_string);
-				$event_date_formatted = $event_date->format('F d, Y');
+
+				$isTBD = strpos($event_date_string, 'TBD');
+				$isNA = strpos($event_date_string, 'N/A');
+
+				if ( $isTBD !== false ) {
+					$event_date_formatted = $event_date_string;
+				} elseif ( $isNA !== false ) {
+					$event_date_formatted = '';
+				} else {
+					$event_date = new DateTime($event_date_string);
+					$event_date_formatted = $event_date->format('F d, Y');
+				}
+
 
 				// For comparing event date/time to NOW
 				$today = strtotime('now');
@@ -186,11 +198,21 @@ function gmf_events_shortcode_hp( $atts, $content = null ) {
 				$show_event = false;
 
 				if ($news_event === 'event' || $news_event === 'fundraiser'):
-					$event_date_html = ($event_date !== '') ? '<em class="date"><span>On </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
-					$show_event = ($event_compare >= $today);
+					if ( $isTBD !== false || $isNA !== false  ) {
+						$show_event = true;
+						$event_date_html = '<em class="date">' . $event_date_formatted . '</em>';
+					} else {
+						$event_date_html = ($event_date !== '') ? '<em class="date"><span>On </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
+						$show_event = ($event_compare >= $today);
+					}
 				else:
-					$event_date_html = ($event_date !== '') ? '<em class="date"><span>Posted on </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
-					$show_event = ($event_compare >= $today);
+					if ( $isTBD !== false || $isNA !== false  ) {
+						$show_event = true;
+						$event_date_html = '<em class="date">' . $event_date_formatted . '</em>';
+					} else {
+						$event_date_html = ($event_date !== '') ? '<em class="date"><span>Posted on </span><time datetime="' . $event_date_string . '">' . $event_date_formatted . '</time></em>' : '';
+						$show_event = ($event_compare >= $today);
+					}
 				endif;
 
 				// If date/time hasn't passed.
@@ -203,6 +225,7 @@ function gmf_events_shortcode_hp( $atts, $content = null ) {
 					$events_output .= $event_date_html;
 					$events_output .= '</div></header><div class="entry-content">';
 					$events_output .= esc_html( get_the_excerpt($event->ID) );
+					$events_output .= '&nbsp;<a href="' . esc_url( get_permalink($event->ID) ) . '" aria-label="Read more: ' . esc_html( get_the_title($event->ID) ) . '">Read more</a>';
 					$events_output .= '</div></article>';
 
 				endif;
@@ -210,7 +233,7 @@ function gmf_events_shortcode_hp( $atts, $content = null ) {
     	endforeach;
 
 			$events_output .= '</div>';
-			
+
     else:
     	$events_output = '<div class="alert">Sorry, there are no events.</div>';
     endif;

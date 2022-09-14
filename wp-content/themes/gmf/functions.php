@@ -46,6 +46,7 @@ if ( ! function_exists( 'gmf_setup' ) ) :
 		register_nav_menus( array(
 			'menu-1' => esc_html__( 'Primary', 'gmf' ),
 			'menu-2' => esc_html__( 'Secondary', 'gmf' ),
+			'menu-3' => esc_html__( 'Footer', 'gmf' ),
 		) );
 
 		/*
@@ -194,6 +195,7 @@ require get_template_directory() . '/inc/posttype-bio.php';	// Custom Bios Post 
 require get_template_directory() . '/inc/custom-metaboxes.php';	// Custom Metabox General Functions
 require get_template_directory() . '/inc/custom-meta-home.php';	// Custom Metabox Functions for Home Template
 require get_template_directory() . '/inc/custom-meta-donate.php';	// Custom Metabox Functions for Donate Template
+require get_template_directory() . '/inc/custom-meta-bands.php';	// Custom Metabox Functions for Donate Template
 require get_template_directory() . '/inc/custom-meta-2col.php';	// Custom Metabox Functions for Donate Template
 
 
@@ -274,6 +276,11 @@ class Accessible_Nav_Menu_Widget extends WP_Widget {
       $instance['nav_menu'] = (int) $new_instance['nav_menu'];
       return $instance;
   }
+
+	function sortByMetaOrder($a, $b) {
+		// return strcmp($a['order'], $b['order']);
+		return $a['order'] - $b['order'];
+	}
 
   function form( $instance ) {
       $title = isset( $instance['title'] ) ? $instance['title'] : '';

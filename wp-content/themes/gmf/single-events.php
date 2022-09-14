@@ -9,7 +9,12 @@
 
 get_header();
 
-$eventsPhoto = wp_get_attachment_image(91, 'full');
+global $post;
+if (has_post_thumbnail($post)) {
+	$eventsPhoto = get_the_post_thumbnail($post->ID, 'full');
+} else {
+	$eventsPhoto = wp_get_attachment_image(91, 'full');
+}
 
 ?>
 
